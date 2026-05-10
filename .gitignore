@@ -1,0 +1,32 @@
+﻿# Node
+node_modules/
+.npm/
+
+# Next.js
+apps/web/.next/
+apps/web/out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+apps/api/.venv/
+
+# Env
+.env
+apps/api/.env
+apps/web/.env.local
+
+# Logs
+*.log
+
+# DB
+*.db
+
+# IDE
+.vscode/
+.idea/

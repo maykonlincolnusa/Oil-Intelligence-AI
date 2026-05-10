@@ -1,0 +1,54 @@
+﻿@import "maplibre-gl/dist/maplibre-gl.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 217 30% 8%;
+  --panel: 218 23% 13%;
+  --panel-soft: 217 21% 17%;
+  --ink: 213 18% 93%;
+  --muted: 215 15% 62%;
+  --accent: 39 93% 55%;
+  --danger: 356 76% 58%;
+  --success: 154 57% 50%;
+}
+
+* {
+  @apply border-slate-800;
+}
+
+body {
+  @apply bg-bg text-ink font-display antialiased;
+  background-image: radial-gradient(circle at 18% 14%, rgba(247, 178, 68, 0.18), transparent 36%),
+    radial-gradient(circle at 82% 12%, rgba(56, 121, 173, 0.21), transparent 32%),
+    radial-gradient(circle at 55% 90%, rgba(14, 47, 77, 0.24), transparent 38%),
+    linear-gradient(145deg, rgba(2, 9, 18, 0.98), rgba(7, 13, 24, 1));
+}
+
+::selection {
+  background: rgba(250, 204, 21, 0.35);
+  color: #f7fafc;
+}
+
+.grid-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(154, 179, 208, 0.1) 1px, transparent 0);
+}
+
+.premium-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-header::after {
+  content: "";
+  position: absolute;
+  right: -10%;
+  top: -20%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.2), transparent 70%);
+  pointer-events: none;
+}

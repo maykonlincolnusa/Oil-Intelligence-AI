@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: oil-intel-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-oil_intelligence}
+      POSTGRES_USER: ${POSTGRES_USER:-oil}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-oil}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-oil} -d ${POSTGRES_DB:-oil_intelligence}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: oil-intel-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./apps/api
+    container_name: oil-intel-api
+    env_file:
+      - ./.env.example
+    volumes:
+      - ./apps/api:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker:
+    build:
+      context: ./apps/api
+    container_name: oil-intel-worker
+    env_file:
+      - ./.env.example
+    volumes:
+      - ./apps/api:/app
+    depends_on:
+      - api
+      - redis
+    command: celery -A app.workers.celery_app.celery_app worker --loglevel=info
+
+  worker-beat:
+    build:
+      context: ./apps/api
+    container_name: oil-intel-worker-beat
+    env_file:
+      - ./.env.example
+    volumes:
+      - ./apps/api:/app
+    depends_on:
+      - api
+      - redis
+    command: celery -A app.workers.celery_app.celery_app beat --loglevel=info
+
+  web:
+    build:
+      context: ./apps/web
+    container_name: oil-intel-web
+    env_file:
+      - ./.env.example
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    command: npm run dev
+
+volumes:
+  postgres_data:
